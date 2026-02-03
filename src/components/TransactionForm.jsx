@@ -10,11 +10,33 @@ export default function TransactionForm() {
     type: "expense",
     amount: "",
     category: "",
+    customCategory: "",
     mode: "",
     date: "",
     description: "",
     tags: ""
   });
+
+  // Category lists
+  const incomeCategories = [
+    "Salary",
+    "Business",
+    "Freelance",
+    "Investment",
+    "Interest",
+    "Other"
+  ];
+
+  const expenseCategories = [
+    "Food",
+    "Rent",
+    "Travel",
+    "Shopping",
+    "Bills",
+    "Entertainment",
+    "Health",
+    "Other"
+  ];
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -24,21 +46,38 @@ export default function TransactionForm() {
       return;
     }
 
+    const finalCategory =
+      form.category === "Other"
+        ? form.customCategory
+        : form.category;
+
+    if (!finalCategory) {
+      alert("Please enter category");
+      return;
+    }
+
     const newTransaction = {
       id: Date.now(),
       userId: currentUser.id,
-      ...form,
+      type: form.type,
       amount: Number(form.amount),
-      tags: form.tags ? form.tags.split(",").map(t => t.trim()) : [],
+      category: finalCategory,
+      mode: form.mode,
+      date: form.date,
+      description: form.description,
+      tags: form.tags
+        ? form.tags.split(",").map(t => t.trim())
+        : []
     };
 
     dispatch(addTransaction(newTransaction));
 
-    // reset form
+    // Reset form
     setForm({
       type: "expense",
       amount: "",
       category: "",
+      customCategory: "",
       mode: "",
       date: "",
       description: "",
@@ -48,44 +87,83 @@ export default function TransactionForm() {
 
   return (
     <div style={container}>
-      <h3 style={{ marginBottom: "10px" }}>Add Transaction</h3>
+      <h3>Add Transaction</h3>
 
       <form onSubmit={handleSubmit} style={formBox}>
-        
-        {/* Type */}
-        <select required value={form.type}
-          onChange={(e) => setForm({ ...form, type: e.target.value })}
+
+        {/* TYPE */}
+        <select
+          value={form.type}
+          onChange={(e) =>
+            setForm({
+              ...form,
+              type: e.target.value,
+              category: "",
+              customCategory: ""
+            })
+          }
+          required
         >
           <option value="expense">Expense</option>
           <option value="income">Income</option>
         </select>
 
-        {/* Amount */}
-        <input type="number" placeholder="Amount" required
+        {/* AMOUNT */}
+        <input
+          type="number"
+          placeholder="Amount"
           value={form.amount}
-          onChange={(e) => setForm({ ...form, amount: e.target.value })}
+          onChange={(e) =>
+            setForm({ ...form, amount: e.target.value })
+          }
+          required
         />
 
-        {/* Category Dropdown */}
-        <select required value={form.category}
-          onChange={(e) => setForm({ ...form, category: e.target.value })}
+        {/* CATEGORY (Dynamic) */}
+        <select
+          value={form.category}
+          onChange={(e) =>
+            setForm({
+              ...form,
+              category: e.target.value,
+              customCategory: ""
+            })
+          }
+          required
         >
           <option value="">Category</option>
-          <option value="Food">Food</option>
-          <option value="Rent">Rent</option>
-          <option value="Travel">Travel</option>
-          <option value="Shopping">Shopping</option>
-          <option value="Bills">Bills</option>
-          <option value="Entertainment">Entertainment</option>
-          <option value="Health">Health</option>
-          <option value="Other">Other</option>
+          {(form.type === "income"
+            ? incomeCategories
+            : expenseCategories
+          ).map(cat => (
+            <option key={cat} value={cat}>
+              {cat}
+            </option>
+          ))}
         </select>
 
-        {/* Payment Mode Dropdown */}
-        <select required value={form.mode}
-          onChange={(e) => setForm({ ...form, mode: e.target.value })}
+        {/* CUSTOM CATEGORY */}
+        {form.category === "Other" && (
+          <input
+            type="text"
+            placeholder="Enter custom category"
+            value={form.customCategory}
+            onChange={(e) =>
+              setForm({ ...form, customCategory: e.target.value })
+            }
+            required
+          />
+        )}
+
+        {/* PAYMENT MODE */}
+        <select
+          value={form.mode}
+          onChange={(e) =>
+            setForm({ ...form, mode: e.target.value })
+          }
+          required
         >
-          <option value="">Mode</option>
+          <option value="">Payment Mode</option>
           <option value="UPI">UPI</option>
           <option value="Cash">Cash</option>
           <option value="Card">Card</option>
@@ -93,42 +171,53 @@ export default function TransactionForm() {
           <option value="Wallet">Wallet</option>
         </select>
 
-        {/* Date */}
-        <input type="date" required
+        {/* DATE */}
+        <input
+          type="date"
           value={form.date}
-          onChange={(e) => setForm({ ...form, date: e.target.value })}
+          onChange={(e) =>
+            setForm({ ...form, date: e.target.value })
+          }
+          required
         />
 
-        {/* Tags */}
-        <input type="text" placeholder="Tags (comma separated)"
+        {/* TAGS */}
+        <input
+          type="text"
+          placeholder="Tags (comma separated)"
           value={form.tags}
-          onChange={(e) => setForm({ ...form, tags: e.target.value })}
+          onChange={(e) =>
+            setForm({ ...form, tags: e.target.value })
+          }
         />
 
-        {/* Description */}
-        <input type="text" placeholder="Description (optional)"
+        {/* DESCRIPTION */}
+        <input
+          type="text"
+          placeholder="Description (optional)"
           value={form.description}
-          onChange={(e) => setForm({ ...form, description: e.target.value })}
+          onChange={(e) =>
+            setForm({ ...form, description: e.target.value })
+          }
         />
 
-        {/* Submit */}
         <button type="submit">Add</button>
       </form>
     </div>
   );
 }
 
-// Basic Inline CSS
+/* BASIC STYLING */
 const container = {
   padding: "15px",
-  border: "1px solid #ddd",
   background: "white",
-  borderRadius: "5px",
-  marginBottom: "15px",
+  border: "1px solid #ddd",
+  borderRadius: "6px",
+  marginBottom: "15px"
 };
 
 const formBox = {
   display: "flex",
   flexWrap: "wrap",
-  gap: "10px",
+  gap: "10px"
 };

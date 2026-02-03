@@ -1,52 +1,66 @@
 import { useDispatch, useSelector } from "react-redux";
-import { deleteTransaction } from "../redux/transactionSlice";
+import { deleteTransaction, updateTransaction } from "../redux/transactionSlice";
 import { sortByField } from "../redux/filterSlice";
-import { updateTransaction } from "../redux/transactionSlice";
 import { useState } from "react";
-
 
 export default function TransactionTable({ filters }) {
   const dispatch = useDispatch();
-  const [editId, setEditId] = useState(null);
-  const [editForm, setEditForm] = useState({});
-
 
   const currentUser = useSelector(state => state.user.currentUser);
   const allTransactions = useSelector(state => state.transaction.transactions);
 
-  // === Filter only current user's data ===
-  let filtered = allTransactions.filter(t => t.userId === currentUser.id);
-
-  // === FILTERS (from DashboardPage) ===
-  if (filters.type) filtered = filtered.filter(t => t.type === filters.type);
-  if (filters.category) filtered = filtered.filter(t => t.category === filters.category);
-  if (filters.mode) filtered = filtered.filter(t => t.mode === filters.mode);
-  if (filters.month) {
-    filtered = filtered.filter(t => {
-      const month = new Date(t.date).getMonth() + 1;
-      return month == filters.month;
-    });
-  }
-
-  // === SORTING ===
   const sortField = useSelector(state => state.filter.sortField);
   const sortOrder = useSelector(state => state.filter.sortOrder);
 
+  // Edit state
+  const [editId, setEditId] = useState(null);
+  const [editForm, setEditForm] = useState({});
+
+  // 1️⃣ Filter by logged-in user
+  let filtered = allTransactions.filter(
+    t => t.userId === currentUser.id
+  );
+
+  // 2️⃣ Apply filters (from Dashboard)
+  if (filters.type) {
+    filtered = filtered.filter(t => t.type === filters.type);
+  }
+
+  if (filters.category) {
+    filtered = filtered.filter(t => t.category === filters.category);
+  }
+
+  if (filters.mode) {
+    filtered = filtered.filter(t => t.mode === filters.mode);
+  }
+
+  if (filters.month) {
+    filtered = filtered.filter(
+      t => new Date(t.date).getMonth() + 1 == filters.month
+    );
+  }
+
+  // 3️⃣ Apply sorting
   if (sortField) {
     filtered.sort((a, b) => {
       if (sortField === "amount") {
-        return sortOrder === "asc" ? a.amount - b.amount : b.amount - a.amount;
+        return sortOrder === "asc"
+          ? a.amount - b.amount
+          : b.amount - a.amount;
       }
+
       if (sortField === "date") {
         return sortOrder === "asc"
           ? new Date(a.date) - new Date(b.date)
           : new Date(b.date) - new Date(a.date);
       }
+
       if (sortField === "category") {
         return sortOrder === "asc"
           ? a.category.localeCompare(b.category)
           : b.category.localeCompare(a.category);
       }
+
       return 0;
     });
   }
@@ -55,13 +69,11 @@ export default function TransactionTable({ filters }) {
     <div style={box}>
       <h3>Transactions</h3>
 
-      {/* If no results */}
       {filtered.length === 0 ? (
         <p>No transactions found...</p>
       ) : (
         <>
-
-          {/* Sorting Buttons */}
+          {/* SORT BUTTONS */}
           <div style={sortBox}>
             <button onClick={() => dispatch(sortByField("amount"))}>
               Sort Amount
@@ -74,7 +86,7 @@ export default function TransactionTable({ filters }) {
             </button>
           </div>
 
-          {/* Table */}
+          {/* TABLE */}
           <table style={table}>
             <thead>
               <tr>
@@ -90,23 +102,125 @@ export default function TransactionTable({ filters }) {
             <tbody>
               {filtered.map(t => (
                 <tr key={t.id}>
-                  <td>{t.date}</td>
-                  <td>{t.type}</td>
-                  <td>{t.category}</td>
-                  <td>₹{t.amount}</td>
-                  <td>{t.mode}</td>
-                  <td>
-                    <button onClick={() => {
-                        setEditId(t.id);
-                        setEditForm({ ...t, tags: t.tags?.join(",") });
-                        }}>
-                        Edit
-                    gv</button>
+                  {editId === t.id ? (
+                    <>
+                      {/* DATE */}
+                      <td>
+                        <input
+                          type="date"
+                          value={editForm.date}
+                          onChange={e =>
+                            setEditForm({ ...editForm, date: e.target.value })
+                          }
+                        />
+                      </td>
 
-                    <button onClick={() => dispatch(deleteTransaction(t.id))}>
-                      Delete
-                    </button>
-                  </td>
+                      {/* TYPE */}
+                      <td>
+                        <select
+                          value={editForm.type}
+                          onChange={e =>
+                            setEditForm({ ...editForm, type: e.target.value })
+                          }
+                        >
+                          <option value="income">Income</option>
+                          <option value="expense">Expense</option>
+                        </select>
+                      </td>
+
+                      {/* CATEGORY (TEXT INPUT – supports custom) */}
+                      <td>
+                        <input
+                          type="text"
+                          value={editForm.category}
+                          onChange={e =>
+                            setEditForm({ ...editForm, category: e.target.value })
+                          }
+                          required
+                        />
+                      </td>
+
+                      {/* AMOUNT */}
+                      <td>
+                        <input
+                          type="number"
+                          value={editForm.amount}
+                          onChange={e =>
+                            setEditForm({ ...editForm, amount: e.target.value })
+                          }
+                        />
+                      </td>
+
+                      {/* MODE */}
+                      <td>
+                        <select
+                          value={editForm.mode}
+                          onChange={e =>
+                            setEditForm({ ...editForm, mode: e.target.value })
+                          }
+                        >
+                          <option>UPI</option>
+                          <option>Cash</option>
+                          <option>Card</option>
+                          <option>NetBanking</option>
+                          <option>Wallet</option>
+                        </select>
+                      </td>
+
+                      {/* ACTIONS */}
+                      <td>
+                        <button
+                          onClick={() => {
+                            dispatch(updateTransaction({
+                              ...editForm,
+                              id: editId,
+                              userId: currentUser.id,
+                              amount: Number(editForm.amount),
+                              tags: editForm.tags
+                                ? editForm.tags
+                                    .split(",")
+                                    .map(t => t.trim())
+                                : []
+                            }));
+                            setEditId(null);
+                          }}
+                        >
+                          Save
+                        </button>
+
+                        <button onClick={() => setEditId(null)}>
+                          Cancel
+                        </button>
+                      </td>
+                    </>
+                  ) : (
+                    <>
+                      <td>{t.date}</td>
+                      <td>{t.type}</td>
+                      <td>{t.category}</td>
+                      <td>₹{t.amount}</td>
+                      <td>{t.mode}</td>
+                      <td>
+                        <button
+                          onClick={() => {
+                            setEditId(t.id);
+                            setEditForm({
+                              ...t,
+                              tags: t.tags?.join(",") || ""
+                            });
+                          }}
+                        >
+                          Edit
+                        </button>
+
+                        <button
+                          onClick={() => dispatch(deleteTransaction(t.id))}
+                        >
+                          Delete
+                        </button>
+                      </td>
+                    </>
+                  )}
                 </tr>
               ))}
             </tbody>
@@ -117,6 +231,7 @@ export default function TransactionTable({ filters }) {
   );
 }
 
+/* BASIC STYLES */
 const box = {
   padding: "15px",
   background: "white",
