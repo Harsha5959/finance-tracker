@@ -1,5 +1,8 @@
 import { useDispatch, useSelector } from "react-redux";
-import { deleteTransaction, updateTransaction } from "../redux/transactionSlice";
+import {
+  deleteTransaction,
+  updateTransaction
+} from "../redux/transactionSlice";
 import { sortByField } from "../redux/filterSlice";
 import { useState } from "react";
 
@@ -7,21 +10,22 @@ export default function TransactionTable({ filters }) {
   const dispatch = useDispatch();
 
   const currentUser = useSelector(state => state.user.currentUser);
-  const allTransactions = useSelector(state => state.transaction.transactions);
+  const allTransactions = useSelector(
+    state => state.transaction.transactions
+  );
 
   const sortField = useSelector(state => state.filter.sortField);
   const sortOrder = useSelector(state => state.filter.sortOrder);
 
-  // Edit state
   const [editId, setEditId] = useState(null);
   const [editForm, setEditForm] = useState({});
 
-  // 1️⃣ Filter by logged-in user
+  /* USER-SPECIFIC TRANSACTIONS */
   let filtered = allTransactions.filter(
     t => t.userId === currentUser.id
   );
 
-  // 2️⃣ Apply filters (from Dashboard)
+  /* APPLY FILTERS */
   if (filters.type) {
     filtered = filtered.filter(t => t.type === filters.type);
   }
@@ -40,9 +44,9 @@ export default function TransactionTable({ filters }) {
     );
   }
 
-  // 3️⃣ Apply sorting
+  /* APPLY SORTING */
   if (sortField) {
-    filtered.sort((a, b) => {
+    filtered = [...filtered].sort((a, b) => {
       if (sortField === "amount") {
         return sortOrder === "asc"
           ? a.amount - b.amount
@@ -66,28 +70,41 @@ export default function TransactionTable({ filters }) {
   }
 
   return (
-    <div style={box}>
+    <div className="transaction-table">
       <h3>Transactions</h3>
 
       {filtered.length === 0 ? (
-        <p>No transactions found...</p>
+        <p>No transactions found.</p>
       ) : (
         <>
-          {/* SORT BUTTONS */}
-          <div style={sortBox}>
-            <button onClick={() => dispatch(sortByField("amount"))}>
-              Sort Amount
+          {/* SORT CONTROLS */}
+          <div className="sort-controls">
+            <span className="sort-label">Sort:</span>
+
+            <button
+              className={sortField === "amount" ? "active" : ""}
+              onClick={() => dispatch(sortByField("amount"))}
+            >
+              Amount
             </button>
-            <button onClick={() => dispatch(sortByField("date"))}>
-              Sort Date
+
+            <button
+              className={sortField === "date" ? "active" : ""}
+              onClick={() => dispatch(sortByField("date"))}
+            >
+              Date
             </button>
-            <button onClick={() => dispatch(sortByField("category"))}>
-              Sort Category
+
+            <button
+              className={sortField === "category" ? "active" : ""}
+              onClick={() => dispatch(sortByField("category"))}
+            >
+              Category
             </button>
           </div>
 
           {/* TABLE */}
-          <table style={table}>
+          <table>
             <thead>
               <tr>
                 <th>Date</th>
@@ -104,23 +121,27 @@ export default function TransactionTable({ filters }) {
                 <tr key={t.id}>
                   {editId === t.id ? (
                     <>
-                      {/* DATE */}
                       <td>
                         <input
                           type="date"
                           value={editForm.date}
                           onChange={e =>
-                            setEditForm({ ...editForm, date: e.target.value })
+                            setEditForm({
+                              ...editForm,
+                              date: e.target.value
+                            })
                           }
                         />
                       </td>
 
-                      {/* TYPE */}
                       <td>
                         <select
                           value={editForm.type}
                           onChange={e =>
-                            setEditForm({ ...editForm, type: e.target.value })
+                            setEditForm({
+                              ...editForm,
+                              type: e.target.value
+                            })
                           }
                         >
                           <option value="income">Income</option>
@@ -128,35 +149,40 @@ export default function TransactionTable({ filters }) {
                         </select>
                       </td>
 
-                      {/* CATEGORY (TEXT INPUT – supports custom) */}
                       <td>
                         <input
                           type="text"
                           value={editForm.category}
                           onChange={e =>
-                            setEditForm({ ...editForm, category: e.target.value })
+                            setEditForm({
+                              ...editForm,
+                              category: e.target.value
+                            })
                           }
-                          required
                         />
                       </td>
 
-                      {/* AMOUNT */}
                       <td>
                         <input
                           type="number"
                           value={editForm.amount}
                           onChange={e =>
-                            setEditForm({ ...editForm, amount: e.target.value })
+                            setEditForm({
+                              ...editForm,
+                              amount: e.target.value
+                            })
                           }
                         />
                       </td>
 
-                      {/* MODE */}
                       <td>
                         <select
                           value={editForm.mode}
                           onChange={e =>
-                            setEditForm({ ...editForm, mode: e.target.value })
+                            setEditForm({
+                              ...editForm,
+                              mode: e.target.value
+                            })
                           }
                         >
                           <option>UPI</option>
@@ -167,21 +193,17 @@ export default function TransactionTable({ filters }) {
                         </select>
                       </td>
 
-                      {/* ACTIONS */}
                       <td>
                         <button
                           onClick={() => {
-                            dispatch(updateTransaction({
-                              ...editForm,
-                              id: editId,
-                              userId: currentUser.id,
-                              amount: Number(editForm.amount),
-                              tags: editForm.tags
-                                ? editForm.tags
-                                    .split(",")
-                                    .map(t => t.trim())
-                                : []
-                            }));
+                            dispatch(
+                              updateTransaction({
+                                ...editForm,
+                                id: editId,
+                                userId: currentUser.id,
+                                amount: Number(editForm.amount)
+                              })
+                            );
                             setEditId(null);
                           }}
                         >
@@ -204,17 +226,16 @@ export default function TransactionTable({ filters }) {
                         <button
                           onClick={() => {
                             setEditId(t.id);
-                            setEditForm({
-                              ...t,
-                              tags: t.tags?.join(",") || ""
-                            });
+                            setEditForm(t);
                           }}
                         >
                           Edit
                         </button>
 
                         <button
-                          onClick={() => dispatch(deleteTransaction(t.id))}
+                          onClick={() =>
+                            dispatch(deleteTransaction(t.id))
+                          }
                         >
                           Delete
                         </button>
@@ -230,23 +251,3 @@ export default function TransactionTable({ filters }) {
     </div>
   );
 }
-
-/* BASIC STYLES */
-const box = {
-  padding: "15px",
-  background: "white",
-  border: "1px solid #ddd",
-  borderRadius: "6px",
-  marginTop: "10px"
-};
-
-const sortBox = {
-  marginBottom: "10px",
-  display: "flex",
-  gap: "10px"
-};
-
-const table = {
-  width: "100%",
-  borderCollapse: "collapse"
-};

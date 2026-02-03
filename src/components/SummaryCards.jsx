@@ -1,5 +1,4 @@
 export default function SummaryCards({ transactions }) {
-  
   const income = transactions
     .filter(t => t.type === "income")
     .reduce((sum, t) => sum + t.amount, 0);
@@ -11,26 +10,21 @@ export default function SummaryCards({ transactions }) {
   const savings = income - expense;
 
   return (
-    <div style={wrap}>
-      <div style={card}>Income: ₹{income}</div>
-      <div style={card}>Expense: ₹{expense}</div>
-      <div style={card}>Savings: ₹{savings}</div>
+    <div className="summary-cards">
+      <div className="summary-card">
+        <h4>Income</h4>
+        <p>₹{income}</p>
+      </div>
+
+      <div className="summary-card">
+        <h4>Expense</h4>
+        <p>₹{expense}</p>
+      </div>
+
+      <div className="summary-card">
+        <h4>Savings</h4>
+        <p>₹{savings}</p>
+      </div>
     </div>
   );
 }
-
-const wrap = {
-  display: "flex",
-  gap: "15px",
-  marginBottom: "15px"
-};
-
-const card = {
-  padding: "10px 15px",
-  background: "white",
-  border: "1px solid #ddd",
-  borderRadius: "6px",
-  fontWeight: 600,
-  minWidth: "120px",
-  textAlign: "center"
-};

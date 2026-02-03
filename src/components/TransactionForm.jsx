@@ -48,7 +48,7 @@ export default function TransactionForm() {
 
     const finalCategory =
       form.category === "Other"
-        ? form.customCategory
+        ? form.customCategory.trim()
         : form.category;
 
     if (!finalCategory) {
@@ -86,11 +86,10 @@ export default function TransactionForm() {
   };
 
   return (
-    <div style={container}>
+    <div className="transaction-form">
       <h3>Add Transaction</h3>
 
-      <form onSubmit={handleSubmit} style={formBox}>
-
+      <form onSubmit={handleSubmit}>
         {/* TYPE */}
         <select
           value={form.type}
@@ -119,7 +118,7 @@ export default function TransactionForm() {
           required
         />
 
-        {/* CATEGORY (Dynamic) */}
+        {/* CATEGORY */}
         <select
           value={form.category}
           onChange={(e) =>
@@ -201,23 +200,8 @@ export default function TransactionForm() {
           }
         />
 
-        <button type="submit">Add</button>
+        <button type="submit">Add Transaction</button>
       </form>
     </div>
   );
 }
-
-/* BASIC STYLING */
-const container = {
-  padding: "15px",
-  background: "white",
-  border: "1px solid #ddd",
-  borderRadius: "6px",
-  marginBottom: "15px"
-};
-
-const formBox = {
-  display: "flex",
-  flexWrap: "wrap",
-  gap: "10px"
-};

@@ -9,56 +9,62 @@ export default function Filters({ setFilters }) {
   });
 
   const handleChange = (e) => {
-    setFilter({ ...filter, [e.target.name]: e.target.value });
-    setFilters({ ...filter, [e.target.name]: e.target.value });
+    const updated = {
+      ...filter,
+      [e.target.name]: e.target.value
+    };
+
+    setFilter(updated);
+    setFilters(updated);
   };
 
   return (
-    <div style={box}>
-      <h4>Filters</h4>
-
-      <select name="type" onChange={handleChange}>
+    <div className="filters">
+      <select name="type" value={filter.type} onChange={handleChange}>
         <option value="">Type</option>
         <option value="income">Income</option>
         <option value="expense">Expense</option>
       </select>
 
-      <select name="category" onChange={handleChange}>
+      <select
+        name="category"
+        value={filter.category}
+        onChange={handleChange}
+      >
         <option value="">Category</option>
-        <option>Food</option>
-        <option>Rent</option>
-        <option>Travel</option>
-        <option>Shopping</option>
-        <option>Bills</option>
-        <option>Entertainment</option>
-        <option>Health</option>
-        <option>Other</option>
+        <option value="Food">Food</option>
+        <option value="Rent">Rent</option>
+        <option value="Travel">Travel</option>
+        <option value="Shopping">Shopping</option>
+        <option value="Bills">Bills</option>
+        <option value="Entertainment">Entertainment</option>
+        <option value="Health">Health</option>
+        <option value="Salary">Salary</option>
+        <option value="Business">Business</option>
+        <option value="Freelance">Freelance</option>
+        <option value="Investment">Investment</option>
+        <option value="Other">Other</option>
       </select>
 
-      <select name="mode" onChange={handleChange}>
-        <option value="">Mode</option>
-        <option>UPI</option>
-        <option>Cash</option>
-        <option>Card</option>
-        <option>NetBanking</option>
-        <option>Wallet</option>
+      <select name="mode" value={filter.mode} onChange={handleChange}>
+        <option value="">Payment Mode</option>
+        <option value="UPI">UPI</option>
+        <option value="Cash">Cash</option>
+        <option value="Card">Card</option>
+        <option value="NetBanking">NetBanking</option>
+        <option value="Wallet">Wallet</option>
       </select>
 
-      <select name="month" onChange={handleChange}>
+      <select name="month" value={filter.month} onChange={handleChange}>
         <option value="">Month</option>
         {Array.from({ length: 12 }, (_, i) => (
-          <option key={i} value={i+1}>
-            {new Date(0, i).toLocaleString("default", { month: "long" })}
+          <option key={i} value={i + 1}>
+            {new Date(0, i).toLocaleString("default", {
+              month: "long"
+            })}
           </option>
         ))}
       </select>
     </div>
   );
 }
-
-const box = {
-  padding: "10px",
-  border: "1px solid #ddd",
-  marginBottom: "10px",
-  background: "white"
-};

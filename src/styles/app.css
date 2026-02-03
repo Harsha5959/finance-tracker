@@ -1,0 +1,461 @@
+/* ======================================================
+   GLOBAL THEME VARIABLES
+====================================================== */
+:root {
+  --bg-main: #f4f6f8;
+  --bg-glass: rgba(255, 255, 255, 0.65);
+  --bg-card: rgba(255, 255, 255, 0.9);
+
+  --text-main: #1f2937;
+  --text-soft: #6b7280;
+
+  --primary: #2563eb;
+  --success: #22c55e;
+  --danger: #ef4444;
+
+  --border-soft: rgba(0, 0, 0, 0.1);
+  --blur: blur(14px);
+}
+
+/* ================= DARK THEME ================= */
+body.dark {
+  --bg-main: #0b1220;
+  --bg-glass: rgba(17, 25, 40, 0.75);
+  --bg-card: rgba(30, 41, 59, 0.95);
+
+  --text-main: #e5e7eb;
+  --text-soft: #9ca3af;
+
+  --border-soft: rgba(255, 255, 255, 0.12);
+}
+
+/* ======================================================
+   ROOT & BODY FIX (THIS SOLVES YOUR ISSUE)
+====================================================== */
+html,
+body,
+#root {
+  min-height: 100%;
+  width: 100%;
+  background: var(--bg-main);
+}
+
+/* ======================================================
+   RESET & BASE
+====================================================== */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: "Inter", "Segoe UI", Roboto, Arial, sans-serif;
+  color: var(--text-main);
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+/* ======================================================
+   PAGE CONTAINER (NO BACKGROUND)
+====================================================== */
+.page-container {
+  padding: 22px;
+  min-height: 100vh;
+  background: transparent;
+  position: relative;
+  z-index: 1;
+  animation: fadeIn 0.35s ease;
+}
+
+/* ======================================================
+   NAVBAR (GLASS)
+====================================================== */
+.navbar {
+  backdrop-filter: var(--blur);
+  background: var(--bg-glass);
+  border-bottom: 1px solid var(--border-soft);
+  padding: 14px 22px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.navbar h3 {
+  margin: 0;
+  color: var(--primary);
+  cursor: pointer;
+}
+
+.nav-links {
+  display: flex;
+  gap: 12px;
+}
+
+.nav-links button {
+  background: transparent;
+  border: 1px solid var(--border-soft);
+  color: var(--text-main);
+  padding: 7px 14px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.nav-links button:hover {
+  background: var(--primary);
+  color: #fff;
+  border-color: transparent;
+}
+
+/* ======================================================
+   FILTER BAR
+====================================================== */
+.filters {
+  backdrop-filter: var(--blur);
+  background: var(--bg-glass);
+  border: 1px solid var(--border-soft);
+  padding: 14px;
+  border-radius: 16px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.filters select {
+  padding: 9px 14px;
+  border-radius: 12px;
+  background: var(--bg-card);
+  color: var(--text-main);
+  border: 1px solid var(--border-soft);
+}
+
+/* ======================================================
+   SUMMARY CARDS
+====================================================== */
+.summary-cards {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 22px;
+}
+
+.summary-card {
+  flex: 1;
+  backdrop-filter: var(--blur);
+  background: linear-gradient(135deg, var(--bg-glass), var(--bg-card));
+  border: 1px solid var(--border-soft);
+  padding: 20px;
+  border-radius: 18px;
+  text-align: center;
+  font-weight: 600;
+  animation: slideUp 0.4s ease;
+}
+
+.summary-card:nth-child(1) {
+  border-left: 5px solid var(--success);
+}
+
+.summary-card:nth-child(2) {
+  border-left: 5px solid var(--danger);
+}
+
+.summary-card:nth-child(3) {
+  border-left: 5px solid var(--primary);
+}
+
+/* ======================================================
+   TRANSACTION FORM
+====================================================== */
+form {
+  backdrop-filter: var(--blur);
+  background: var(--bg-glass);
+  border: 1px solid var(--border-soft);
+  padding: 18px;
+  border-radius: 18px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 22px;
+}
+
+form input,
+form select {
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: var(--bg-card);
+  color: var(--text-main);
+  border: 1px solid var(--border-soft);
+  min-width: 180px;
+}
+
+form button {
+  background: var(--primary);
+  color: white;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+form button:hover {
+  transform: translateY(-2px);
+  opacity: 0.9;
+}
+
+/* ======================================================
+   TRANSACTION TABLE
+====================================================== */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  backdrop-filter: var(--blur);
+  background: var(--bg-glass);
+  border-radius: 18px;
+  overflow: hidden;
+  border: 1px solid var(--border-soft);
+}
+
+th {
+  padding: 14px;
+  text-align: left;
+  background: rgba(0, 0, 0, 0.15);
+}
+
+body.dark th {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+td {
+  padding: 14px;
+  border-top: 1px solid var(--border-soft);
+}
+
+tr:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+/* TABLE ACTION BUTTONS */
+td button {
+  padding: 7px 12px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  font-size: 13px;
+  transition: all 0.2s ease;
+}
+
+td button:first-child {
+  background: var(--success);
+  color: white;
+}
+
+td button:last-child {
+  background: var(--danger);
+  color: white;
+}
+
+td button:hover {
+  transform: scale(1.08);
+  opacity: 0.9;
+}
+
+/* ======================================================
+   CHARTS
+====================================================== */
+.chart-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 22px;
+}
+
+.chart-card {
+  backdrop-filter: var(--blur);
+  background: var(--bg-glass);
+  border-radius: 18px;
+  border: 1px solid var(--border-soft);
+  padding: 14px;
+  height: 260px;
+}
+
+.chart-wide {
+  grid-column: 1 / -1;
+  height: 300px;
+}
+
+/* ======================================================
+   RESPONSIVE
+====================================================== */
+@media (max-width: 700px) {
+  .summary-cards {
+    flex-direction: column;
+  }
+
+  .chart-grid {
+    grid-template-columns: 1fr;
+  }
+
+  table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+
+  form input,
+  form select,
+  form button {
+    width: 100%;
+  }
+}
+
+/* ======================================================
+   ANIMATIONS
+====================================================== */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(16px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+
+/* ======================================================
+   SORT CONTROLS (TRANSACTION TABLE)
+====================================================== */
+.sort-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+  padding: 10px 14px;
+  border-radius: 14px;
+  backdrop-filter: var(--blur);
+  background: var(--bg-glass);
+  border: 1px solid var(--border-soft);
+  width: fit-content;
+  animation: fadeIn 0.3s ease;
+}
+
+.sort-label {
+  font-weight: 600;
+  color: var(--text-soft);
+  margin-right: 4px;
+}
+
+/* Sort buttons */
+.sort-controls button {
+  padding: 6px 14px;
+  border-radius: 999px; /* pill style */
+  border: 1px solid var(--border-soft);
+  background: transparent;
+  color: var(--text-main);
+  cursor: pointer;
+  font-size: 13px;
+  transition: all 0.25s ease;
+}
+
+/* Hover */
+.sort-controls button:hover {
+  background: var(--bg-card);
+}
+
+/* Active sort */
+.sort-controls button.active {
+  background: var(--primary);
+  color: #fff;
+  border-color: transparent;
+}
+
+
+/* ======================================================
+   AUTH PAGES (LOGIN & REGISTER)
+====================================================== */
+.auth-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 420px;
+  backdrop-filter: var(--blur);
+  background: var(--bg-glass);
+  border: 1px solid var(--border-soft);
+  border-radius: 22px;
+  padding: 32px 28px;
+  text-align: center;
+  animation: slideUp 0.45s ease;
+}
+
+.auth-card h2 {
+  margin: 0;
+  margin-bottom: 6px;
+}
+
+.auth-subtitle {
+  color: var(--text-soft);
+  margin-bottom: 22px;
+  font-size: 14px;
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.auth-form input {
+  padding: 12px 16px;
+  border-radius: 14px;
+  border: 1px solid var(--border-soft);
+  background: var(--bg-card);
+  color: var(--text-main);
+}
+
+.auth-form button {
+  margin-top: 8px;
+  padding: 12px;
+  border-radius: 14px;
+  border: none;
+  background: var(--primary);
+  color: #fff;
+  font-size: 15px;
+  cursor: pointer;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.auth-form button:hover {
+  transform: translateY(-2px);
+  opacity: 0.9;
+}
+
+.auth-switch {
+  margin-top: 18px;
+  font-size: 14px;
+  color: var(--text-soft);
+}
+
+.auth-switch span {
+  margin-left: 6px;
+  color: var(--primary);
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.auth-switch span:hover {
+  text-decoration: underline;
+}

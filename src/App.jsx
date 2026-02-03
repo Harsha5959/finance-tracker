@@ -4,6 +4,7 @@ import RegisterPage from "./pages/RegisterPage";
 import DashboardPage from "./pages/DashboardPage";
 import AnalyticsPage from "./pages/AnalyticsPage";
 import Navbar from "./components/Navbar";
+import "./styles/app.css";
 
 export default function App() {
   return (

@@ -8,28 +8,27 @@ import TransactionForm from "../components/TransactionForm";
 import TransactionTable from "../components/TransactionTable";
 
 export default function DashboardPage() {
-  // Auth state
+  /* ================= AUTH ================= */
   const currentUser = useSelector(state => state.user.currentUser);
 
-  // Redirect if not logged in
   if (!currentUser) {
     return <Navigate to="/" />;
   }
 
-  // Filters state (controlled by Filters component)
+  /* ================= FILTER STATE ================= */
   const [filters, setFilters] = useState({});
 
-  // All transactions from Redux
+  /* ================= TRANSACTIONS ================= */
   const allTransactions = useSelector(
     state => state.transaction.transactions
   );
 
-  // 1️⃣ User-specific transactions
+  /* USER-SPECIFIC TRANSACTIONS */
   let userTransactions = allTransactions.filter(
     t => t.userId === currentUser.id
   );
 
-  // 2️⃣ Apply filters (for SummaryCards)
+  /* APPLY FILTERS (FOR SUMMARY CARDS) */
   if (filters.type) {
     userTransactions = userTransactions.filter(
       t => t.type === filters.type
@@ -55,7 +54,7 @@ export default function DashboardPage() {
   }
 
   return (
-    <div style={container}>
+    <div className="page-container">
       {/* PAGE TITLE */}
       <h2>Dashboard</h2>
 
@@ -65,18 +64,11 @@ export default function DashboardPage() {
       {/* SUMMARY CARDS */}
       <SummaryCards transactions={userTransactions} />
 
-      {/* ADD TRANSACTION FORM */}
+      {/* ADD TRANSACTION */}
       <TransactionForm />
 
-      {/* TRANSACTION TABLE (filters passed) */}
+      {/* TRANSACTION TABLE */}
       <TransactionTable filters={filters} />
     </div>
   );
 }
-
-/* BASIC PAGE STYLES */
-const container = {
-  padding: "20px",
-  background: "#f5f5f5",
-  minHeight: "100vh"
-};
