@@ -1,20 +1,18 @@
 import { useEffect, useRef } from "react";
 import Chart from "chart.js/auto";
 
-export default function Charts({ transactions }) {
+export default function Charts({ transactions, selectedYear }) {
   const pieRef = useRef(null);
   const barRef = useRef(null);
   const lineRef = useRef(null);
 
-  const destroyChart = (ref) => {
-    if (ref.current && ref.current.chart) {
-      ref.current.chart.destroy();
-    }
+  const destroy = (ref) => {
+    if (ref.current?.chart) ref.current.chart.destroy();
   };
 
   useEffect(() => {
-    /* ================= PIE CHART: EXPENSE BY CATEGORY ================= */
-    destroyChart(pieRef);
+    /* ================= PIE: EXPENSE BY CATEGORY ================= */
+    destroy(pieRef);
 
     const expenseMap = {};
     transactions
@@ -28,95 +26,80 @@ export default function Charts({ transactions }) {
       type: "pie",
       data: {
         labels: Object.keys(expenseMap),
-        datasets: [
-          {
-            data: Object.values(expenseMap),
-            backgroundColor: [
-              "#ef4444",
-              "#f97316",
-              "#eab308",
-              "#22c55e",
-              "#3b82f6",
-              "#8b5cf6"
-            ]
-          }
-        ]
+        datasets: [{
+          label: "Expense by Category",
+          data: Object.values(expenseMap),
+          backgroundColor: [
+            "#ef4444", "#f97316", "#eab308",
+            "#22c55e", "#3b82f6", "#8b5cf6"
+          ]
+        }]
       },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false
-      }
+      options: { responsive: true, maintainAspectRatio: false }
     });
 
-    /* ================= BAR CHART: INCOME VS EXPENSE ================= */
-    destroyChart(barRef);
+    /* ================= BAR: INCOME VS EXPENSE ================= */
+    destroy(barRef);
 
     const income = transactions
       .filter(t => t.type === "income")
-      .reduce((sum, t) => sum + t.amount, 0);
+      .reduce((a, b) => a + b.amount, 0);
 
     const expense = transactions
       .filter(t => t.type === "expense")
-      .reduce((sum, t) => sum + t.amount, 0);
+      .reduce((a, b) => a + b.amount, 0);
 
     barRef.current.chart = new Chart(barRef.current, {
       type: "bar",
       data: {
         labels: ["Income", "Expense"],
-        datasets: [
-          {
-            data: [income, expense],
-            backgroundColor: ["#22c55e", "#ef4444"]
-          }
-        ]
+        datasets: [{
+          label: "Income vs Expense",
+          data: [income, expense],
+          backgroundColor: ["#22c55e", "#ef4444"]
+        }]
       },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false
-      }
+      options: { responsive: true, maintainAspectRatio: false }
     });
 
-    /* ================= LINE CHART: MONTHLY TREND ================= */
-    destroyChart(lineRef);
+    /* ================= LINE: MONTHLY SAVINGS ================= */
+    destroy(lineRef);
 
-    const monthly = {};
+    const monthlySavings = {};
+
     transactions.forEach(t => {
       const month = new Date(t.date).toLocaleString("default", {
         month: "short"
       });
 
-      monthly[month] =
-        (monthly[month] || 0) +
-        (t.type === "income" ? t.amount : -t.amount);
+      if (!monthlySavings[month]) {
+        monthlySavings[month] = 0;
+      }
+
+      monthlySavings[month] +=
+        t.type === "income" ? t.amount : -t.amount;
     });
+
+    const yearLabel =
+      selectedYear === "all" ? "All Years" : selectedYear;
 
     lineRef.current.chart = new Chart(lineRef.current, {
       type: "line",
       data: {
-        labels: Object.keys(monthly),
-        datasets: [
-          {
-            label: "Net Amount",
-            data: Object.values(monthly),
-            borderColor: "#3b82f6",
-            backgroundColor: "rgba(59,130,246,0.2)",
-            tension: 0.3,
-            fill: true
-          }
-        ]
+        labels: Object.keys(monthlySavings),
+        datasets: [{
+          label: `Savings (${yearLabel})`,
+          data: Object.values(monthlySavings),
+          borderColor: "#22c55e",
+          backgroundColor: "rgba(34,197,94,0.25)",
+          fill: true,
+          tension: 0.35
+        }]
       },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false
-      }
+      options: { responsive: true, maintainAspectRatio: false }
     });
 
-    return () => {
-      destroyChart(pieRef);
-      destroyChart(barRef);
-      destroyChart(lineRef);
-    };
-  }, [transactions]);
+  }, [transactions, selectedYear]);
 
   return (
     <div className="chart-grid">
